@@ -1,0 +1,7 @@
+{
+  "name": "PIN - WhatsApp",
+  "description": "CRM especializado para gestión de WhatsApp y contactos, optimizado para negocios en Monterrey, México.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

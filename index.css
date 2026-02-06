@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   /* Brand Colors - Matching Laimu/Auth Design */
@@ -10,14 +8,17 @@
   --color-primary-300: #67e8f9;
   --color-primary-400: #22d3ee;
   --color-primary-500: #06b6d4;
-  --color-primary-600: #0891b2; /* Main Brand Color (Teal) */
+  --color-primary-600: #0891b2;
+  /* Main Brand Color (Teal) */
   --color-primary-700: #0e7490;
   --color-primary-800: #155e75;
   --color-primary-900: #164e63;
   --color-primary-950: #083344;
-  
-  --color-dark-bg: #0F172A; /* Login Left Panel Background */
-  --color-accent: #f59e0b; /* Amber/Orange Accent */
+
+  --color-dark-bg: #0F172A;
+  /* Login Left Panel Background */
+  --color-accent: #f59e0b;
+  /* Amber/Orange Accent */
 }
 
 @layer base {
@@ -31,13 +32,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }

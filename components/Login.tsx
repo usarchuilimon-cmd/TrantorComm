@@ -13,11 +13,24 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [mode, setMode] = useState<'login' | 'signup' | 'magic' | 'forgot'>('login');
+    const [honeyPot, setHoneyPot] = useState(''); // Anti-spam field
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        // Honeypot Check: If user filled this hidden field, they are likely a bot.
+        if (honeyPot) {
+            console.log("Honeypot trapped a bot.");
+            // Fake success to confuse the bot
+            setTimeout(() => {
+                setLoading(false);
+                alert('¡Cuenta creada! Por favor inicia sesión.');
+                setMode('login');
+            }, 1000);
+            return;
+        }
 
         try {
             if (mode === 'magic') {
@@ -135,6 +148,20 @@ const Login = () => {
 
                         {mode === 'signup' && (
                             <>
+                                {/* Honeypot Field - Hidden from humans, visible to bots */}
+                                <div className="absolute opacity-0 -z-10 h-0 w-0 overflow-hidden">
+                                    <label htmlFor="website">Website</label>
+                                    <input
+                                        type="text"
+                                        id="website"
+                                        name="website"
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        value={honeyPot}
+                                        onChange={(e) => setHoneyPot(e.target.value)}
+                                    />
+                                </div>
+
                                 <div className="space-y-1">
                                     <label className="text-sm font-bold text-slate-700">Nombre Completo</label>
                                     <div className="relative">

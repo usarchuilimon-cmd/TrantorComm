@@ -1,47 +1,41 @@
-# SuncFlow - Technical Overview
+# SyncFlow - SaaS Communication Platform
 
 ## Introduction
-SyncFlow is a modern, React-based dashboard application designed for streamlining communication and management workflows. It provides a unified interface for managing conversations, contacts, marketing campaigns, and system settings.
+SyncFlow is a **B2B SaaS platform** designed to centralize and automate communication between businesses and their customers via **WhatsApp Cloud API** and **Facebook Messenger**. 
+
+It serves markets such as **Medical Clinics, Maintenance Companies, and Service Providers**, enabling them to:
+-   Manage patient/client inquiries centrally.
+-   Send massive marketing campaigns (promotions, reminders) via WhatsApp Templates.
+-   Automate responses using chatbots and live agent handoffs.
 
 ## Architecture
-The application is a Single Page Application (SPA) built with:
--   **Framework**: React 18+ (React 19 in dependencies)
+The application is a Multi-Tenant SaaS built with:
+-   **Framework**: React 18+
 -   **Build Tool**: Vite
 -   **Language**: TypeScript
 -   **Styling**: Tailwind CSS
--   **Routing**: Custom state-based routing (`currentView` in `App.tsx`)
+-   **Routing**: State-based (SPA) with Role-Based Access Control (Super Admin vs. Tenant Admin).
 
-## Core Components
+## Core Key Modules
 
-### Layout
--   **`App.tsx`**: The root component. It manages the global application state (`currentView`, `isSidebarCollapsed`) and renders the main layout structure (Sidebar + Content Area). It also includes a custom `ErrorBoundary` for fault tolerance.
--   **`Sidebar.tsx`**: The main navigation component, responsive and collapsible. It handles view switching between different modules.
+### for Service Providers (Tenants)
+1.  **Unified Inbox (`Conversations.tsx`)**: Centralized chat for WhatsApp/Facebook. Supports rich media (files, images) and 24-hour window session management.
+2.  **CRM Lite (`Contacts.tsx`)**: Management of Patients/Clients with tagging (e.g., "VIP", "Post-Op").
+3.  **Campaign Manager (`Campaigns.tsx`)**: Bulk sending of approved WhatsApp Templates.
+4.  **Dashboard**: Metrics on message volume, agent performance, and read rates.
 
-### Modules
-The application is divided into several functional views:
-
-1.  **Dashboard (`Dashboard.tsx`)**: The landing view, likely displaying high-level metrics and KPIs.
-2.  **Conversations (`Conversations.tsx`)**: A messaging interface for managing chats across different platforms (WhatsApp, Messenger, Instagram).
-3.  **Contacts (`Contacts.tsx`)**: A CRM-lite module for managing user contacts (`Contact` interface).
-4.  **Campaigns (`Campaigns.tsx`)**: Tools for creating and managing outreach campaigns (`Campaign` interface), supporting WhatsApp template management.
-5.  **Settings (`Settings.tsx`)**: Configuration panel for application preferences.
-
-### Features
--   **Live Assistant (`LiveAssistant.tsx`)**: A floating assistant component available globally across the app.
--   **Error Handling**: Global `ErrorBoundary` catches render errors and provides a user-friendly fallback UI with a reload option.
+### for Super Admin (Backoffice)
+1.  **Tenant Management**: Create and manage client accounts (Clinics, Companies).
+2.  **Plan Management**: Control subscription tiers and limits.
+3.  **Global Metrics**: System-wide health monitoring.
 
 ## Data Models (`types.ts`)
-
-The application is typed strictly with TypeScript. Key interfaces include:
-
--   **`ViewState`**: Enum defining valid navigation states (`dashboard`, `conversations`, etc.).
--   **`User`**: Represents the current logged-in user or agents.
--   **`Contact`**: Represents external entities/customers, including VIP status and tags.
--   **`Conversation` & `Message`**: Structures for chat capability, supporting text, images, and files.
--   **`Campaign`**: Structure for marketing campaigns, tracking delivery and read rates.
--   **`WhatsAppTemplate`**: Specialized types for handling Meta's WhatsApp API templates.
+The application is strictly typed. Key SaaS additions:
+-   **`Organization`**: Represents a tenant (e.g., "Clínica Dental Monterrey").
+-   **`User`**: Now scoped to an Organization with roles (`SUPER_ADMIN`, `ORG_ADMIN`, `AGENT`).
+-   **`WhatsAppTemplate`**: Meta API compliant structure.
 
 ## Developer Notes
--   **Mock Data**: The application currently uses `mockData.ts` for prototyping. In a production scenario, this should be replaced with API calls.
--   **Icons**: Uses `lucide-react` for a consistent SVG icon set.
--   **Charts**: Uses `recharts` for data visualization in the Dashboard.
+-   **Mock Data**: Currently uses `mockData.ts`.
+-   **Icons**: `lucide-react`.
+-   **Charts**: `recharts`.

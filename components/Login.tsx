@@ -78,7 +78,7 @@ const Login = () => {
                     <div className="w-10 h-10 rounded-full bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
                         <div className="w-3 h-3 rounded-full bg-primary-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div>
                     </div>
-                    <span className="text-2xl font-bold tracking-tight">Trantor<span className="text-primary-400">Comm</span></span>
+                    <span className="text-2xl font-bold tracking-tight">1a <span className="text-primary-400">Fundación</span></span>
                 </div>
 
                 {/* Middle Content */}
@@ -95,7 +95,7 @@ const Login = () => {
                         <div className="flex gap-1 mb-4 text-primary-400">
                             {'★★★★★'.split('').map((s, i) => <span key={i}>{s}</span>)}
                         </div>
-                        <p className="text-lg italic text-slate-200 mb-4">"Desde que usamos TrantorComm, nuestra capacidad de respuesta ha mejorado un 200%. La gestión de campañas es simplemente impecable y nos ahorra horas de trabajo."</p>
+                        <p className="text-lg italic text-slate-200 mb-4">"Desde que usamos la plataforma de 1a Fundación, nuestra capacidad de respuesta ha mejorado un 200%. La gestión de campañas es simplemente impecable y nos ahorra horas de trabajo."</p>
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-xs font-bold shadow-lg shadow-primary-900/20">MR</div>
                             <div>
@@ -105,7 +105,7 @@ const Login = () => {
                         </div>
                     </div>
                     <div className="flex gap-6 text-xs text-slate-500 font-medium">
-                        <span>© 2026 Trantor Comm.</span>
+                        <span>© 2026 1a Fundación.</span>
                         <a href="#" className="hover:text-white transition-colors">Términos y Condiciones</a>
                         <a href="#" className="hover:text-white transition-colors">Política de Privacidad</a>
                     </div>
@@ -117,7 +117,7 @@ const Login = () => {
                 <div className={`w-full max-w-md ${mode === 'signup' ? 'space-y-4' : 'space-y-8'}`}>
                     <div className="text-center lg:text-left">
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                            {mode === 'signup' ? 'Solicita tu acceso' : (mode === 'forgot' ? 'Recuperar Contraseña' : (mode === 'magic' ? 'Acceso sin contraseña' : 'Bienvenido a TrantorComm'))}
+                            {mode === 'signup' ? 'Solicita tu acceso' : (mode === 'forgot' ? 'Recuperar Contraseña' : (mode === 'magic' ? 'Acceso sin contraseña' : 'Bienvenido a 1a Fundación'))}
                         </h2>
                         <p className="text-slate-500">
                             {mode === 'signup' ? 'Regístrate para gestionar tus comunicaciones.' : (mode === 'forgot' ? 'Te enviaremos un enlace para restablecerla.' : (mode === 'magic' ? 'Te enviaremos un enlace mágico a tu correo.' : 'Accede a tu panel de control.'))}

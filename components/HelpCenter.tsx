@@ -22,7 +22,7 @@ const HelpCenter: React.FC = () => {
         {
             id: '2',
             question: '¿Puedo tener múltiples agentes atendiendo el mismo número?',
-            answer: '¡Sí! Trantor está diseñado para equipos. Puedes invitar a tantos agentes como necesites y todos compartirán la misma bandeja de entrada unificada de WhatsApp.'
+            answer: '¡Sí! 1a Fundación está diseñado para equipos. Puedes invitar a tantos agentes como necesites y todos compartirán la misma bandeja de entrada unificada de WhatsApp.'
         },
         {
             id: '3',

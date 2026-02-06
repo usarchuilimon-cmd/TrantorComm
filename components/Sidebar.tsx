@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </svg>
           </div>
           <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
-            <h1 className="text-lg font-extrabold text-white leading-none tracking-tight">Trantor<span className="text-primary-400">Comm</span></h1>
+            <h1 className="text-lg font-extrabold text-white leading-none tracking-tight">1a <span className="text-primary-400">Fundación</span></h1>
             <p className="text-xs text-slate-400 font-medium mt-1">
               {currentUser.role === UserRole.SUPER_ADMIN ? 'Super Admin' : 'Workspace'}
             </p>

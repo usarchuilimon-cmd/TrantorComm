@@ -38,7 +38,8 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const { user } = useAuth();
-  const { stats, loading } = useDashboardStats(user?.organizationId || '');
+  const [timeRange, setTimeRange] = React.useState<'7d' | '24h'>('7d');
+  const { stats, loading } = useDashboardStats(user?.organizationId || '', timeRange);
 
   if (loading) {
     return (
@@ -95,9 +96,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-slate-900">Volumen de Mensajes</h3>
-                <select className="text-sm border-slate-200 rounded-lg text-slate-600 focus:ring-primary-500">
-                  <option>Últimos 7 días</option>
-                  <option>Últimas 24 horas</option>
+                <select
+                  value={timeRange}
+                  onChange={(e) => setTimeRange(e.target.value as '7d' | '24h')}
+                  className="text-sm border-slate-200 rounded-lg text-slate-600 focus:ring-primary-500 cursor-pointer"
+                >
+                  <option value="7d">Últimos 7 días</option>
+                  <option value="24h">Últimas 24 horas</option>
                 </select>
               </div>
               <div className="h-64 w-full">
@@ -212,7 +217,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                   </button>
                 </div>
               </div>
-              <button className="w-full mt-6 py-2.5 border-2 border-dashed border-slate-200 text-slate-500 text-sm font-bold rounded-lg hover:border-primary-500 hover:text-primary-600 transition-all">
+              <button
+                onClick={() => onNavigate(ViewState.CONVERSATIONS)}
+                className="w-full mt-6 py-2.5 border-2 border-dashed border-slate-200 text-slate-500 text-sm font-bold rounded-lg hover:border-primary-500 hover:text-primary-600 transition-all"
+              >
                 Ver Historial de Alertas
               </button>
             </div>

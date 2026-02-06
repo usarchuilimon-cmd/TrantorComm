@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Bell, Lock, Moon, Globe, LogOut, Check, X, Plug } from 'lucide-react';
+import { User, Bell, Lock, Moon, Globe, LogOut, Check, X, Plug, Clock, PieChart, MessageSquare, Zap, RefreshCw } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
 import { useAuth } from './AuthContext';
 import { useOrganization } from '../hooks/useOrganization';
@@ -23,7 +23,17 @@ const Settings: React.FC = () => {
         accessToken: '',
         verifyToken: '',
         businessAccountId: '',
+      },
+      messenger: {
+        pageAccessToken: ''
       }
+    },
+    automation: {
+      timezone: '(GMT-05:00) Eastern Time',
+      enabled: false,
+      awayMessage: '',
+      startTime: '18:00',
+      endTime: '09:00'
     }
   });
   const [saving, setSaving] = useState(false);
@@ -107,13 +117,13 @@ const Settings: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto bg-slate-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">{t('settings')}</h1>
         <p className="text-slate-500 mb-8">Administra tu perfil, preferencias y conexiones.</p>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col md:flex-row">
           {/* Sidebar Navigation */}
-          <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-4 space-y-2">
+          <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-4 space-y-2 shrink-0">
             <button
               onClick={() => setActiveTab('profile')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === 'profile' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-900'}`}
@@ -274,47 +284,188 @@ const Settings: React.FC = () => {
 
             {activeTab === 'integrations' && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <h2 className="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4">Conexiones API</h2>
-
-                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-blue-800 text-sm mb-4">
-                  <p className="font-bold">Meta for Developers</p>
-                  <p>Ingresa las credenciales de tu App de Meta para conectar WhatsApp Cloud API.</p>
+                <div className="flex justify-between items-end border-b border-slate-100 pb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">Conexiones API y Ajustes</h2>
+                    <p className="text-slate-500 text-sm">Gestiona tus credenciales de WhatsApp y Messenger, webhooks y reglas.</p>
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-5 h-5" alt="WA" /> WhatsApp Cloud API
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Access Token (Permanent)</label>
-                      <input
-                        type="password"
-                        value={formData.integrations.whatsapp.accessToken}
-                        onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, accessToken: e.target.value } } })}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"
-                        placeholder="EAAG..."
-                      />
-                    </div>
+                {/* Status Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone Number ID</label>
-                      <input
-                        type="text"
-                        value={formData.integrations.whatsapp.phoneId}
-                        onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, phoneId: e.target.value } } })}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"
-                        placeholder="1000..."
-                      />
+                      <p className="text-xs font-bold text-slate-500 uppercase">Estado del Sistema</p>
+                      <p className="text-lg font-bold text-slate-900">Operacional</p>
                     </div>
+                    <Check className="w-6 h-6 text-emerald-500" />
+                  </div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-xs font-bold text-slate-500 uppercase">Cuota de Mensajes</p>
+                        <p className="text-lg font-bold text-slate-900">84% Usado</p>
+                      </div>
+                      <PieChart className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-1.5">
+                      <div className="bg-primary-600 h-1.5 rounded-full" style={{ width: '84%' }}></div>
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2">WhatsApp Business Account ID</label>
-                      <input
-                        type="text"
-                        value={formData.integrations.whatsapp.businessAccountId}
-                        onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, businessAccountId: e.target.value } } })}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"
-                        placeholder="2000..."
-                      />
+                      <p className="text-xs font-bold text-slate-500 uppercase">Última Sync</p>
+                      <p className="text-lg font-bold text-slate-900">hace 2m</p>
+                    </div>
+                    <RefreshCw className="w-5 h-5 text-amber-500" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col xl:flex-row gap-6">
+                  {/* Left Column: APIs */}
+                  <div className="flex-1 space-y-6">
+                    {/* WhatsApp API */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
+                            <MessageSquare className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-800">API WhatsApp Cloud</h3>
+                            <p className="text-xs text-slate-500">API Oficial de Negocios</p>
+                          </div>
+                        </div>
+                        <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-full flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div> Activo
+                        </span>
+                      </div>
+                      <div className="p-6 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">ID Número de Teléfono</label>
+                            <input
+                              type="text"
+                              value={formData.integrations.whatsapp.phoneId}
+                              onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, phoneId: e.target.value } } })}
+                              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm bg-slate-50"
+                              placeholder="1000..."
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">ID Cuenta WhatsApp Business</label>
+                            <input
+                              type="text"
+                              value={formData.integrations.whatsapp.businessAccountId}
+                              onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, businessAccountId: e.target.value } } })}
+                              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm bg-slate-50"
+                              placeholder="2000..."
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Token de Acceso Permanente</label>
+                          <input
+                            type="password"
+                            value={formData.integrations.whatsapp.accessToken}
+                            onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, whatsapp: { ...formData.integrations.whatsapp, accessToken: e.target.value } } })}
+                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm bg-slate-50"
+                            placeholder="EAAG..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Facebook Messenger */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                            <MessageSquare className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-800">Facebook Messenger</h3>
+                            <p className="text-xs text-slate-500">Integración de Página</p>
+                          </div>
+                        </div>
+                        <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold uppercase rounded-full flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div> Desconectado
+                        </span>
+                      </div>
+                      <div className="p-6">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Token de Acceso a Página</label>
+                          <input
+                            type="password"
+                            value={formData.integrations.messenger.pageAccessToken}
+                            onChange={(e) => setFormData({ ...formData, integrations: { ...formData.integrations, messenger: { ...formData.integrations.messenger, pageAccessToken: e.target.value } } })}
+                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm bg-slate-50"
+                            placeholder="Paste your Page Access Token here"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Automation Rules */}
+                  <div className="w-full xl:w-96 space-y-6 shrink-0">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-bold text-slate-800">Reglas de Automatización</h3>
+                        <div className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-colors duration-300 ${formData.automation.enabled ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                          onClick={() => setFormData({ ...formData, automation: { ...formData.automation, enabled: !formData.automation.enabled } })}>
+                          <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm ${formData.automation.enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 mb-1">Zona Horaria</label>
+                          <select
+                            value={formData.automation.timezone}
+                            onChange={(e) => setFormData({ ...formData, automation: { ...formData.automation, timezone: e.target.value } })}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                          >
+                            <option>(GMT-05:00) Eastern Time</option>
+                            <option>(GMT-06:00) Central Time</option>
+                            <option>(GMT-08:00) Pacific Time</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="block text-xs font-bold text-slate-500">Respuesta de Ausencia</label>
+                          </div>
+                          <textarea
+                            rows={4}
+                            value={formData.automation.awayMessage}
+                            onChange={(e) => setFormData({ ...formData, automation: { ...formData.automation, awayMessage: e.target.value } })}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-slate-50"
+                            placeholder="Hola {{customer_name}}, gracias por escribirnos. Estamos cerrados."
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">Hora de Inicio</label>
+                            <input
+                              type="time"
+                              value={formData.automation.startTime}
+                              onChange={(e) => setFormData({ ...formData, automation: { ...formData.automation, startTime: e.target.value } })}
+                              className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">Hora de Fin</label>
+                            <input
+                              type="time"
+                              value={formData.automation.endTime}
+                              onChange={(e) => setFormData({ ...formData, automation: { ...formData.automation, endTime: e.target.value } })}
+                              className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

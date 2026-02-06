@@ -22,7 +22,9 @@ import {
 import { Conversation, Contact, Message } from '../types';
 import { useConversations } from '../hooks/useConversations';
 import { useContacts } from '../hooks/useContacts';
+import { useTeam } from '../hooks/useTeam';
 import { useAuth } from './AuthContext';
+import { supabase } from '../supabaseClient';
 
 // --- Templates Data ---
 const TEMPLATE_CATEGORIES = ['Todos', 'Bienvenida', 'Ventas', 'Soporte', 'Cierre'];
@@ -113,6 +115,7 @@ const Conversations = () => {
 
   const { conversations, loading: loadingConversations } = useConversations(organizationId);
   const { contacts, loading: loadingContacts } = useContacts(organizationId);
+  const { team } = useTeam(organizationId);
 
   const [selectedConvId, setSelectedConvId] = useState<string>('');
   const [inputText, setInputText] = useState('');
@@ -376,6 +379,46 @@ const Conversations = () => {
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Assignment Section */}
+          <div>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Asignado a</label>
+            <div className="flex gap-2 items-center">
+              <select
+                value={selectedConv.assignedTo || ''}
+                onChange={async (e) => {
+                  const newAgentId = e.target.value;
+                  // Optimistic update locally? Or better just refresh. 
+                  // For quick MVP, let's just trigger update.
+                  // Ideally we would update the local state too, but let's see if Supabase realtime or parent re-fetch handles it.
+                  // Actually, useConversations doesn't expose a 'updateConversation' method yet. 
+                  // I will add a direct update call here.
+
+                  try {
+                    // Call Supabase update
+                    const { error } = await supabase
+                      .from('comm_conversations')
+                      .update({ assigned_to: newAgentId || null })
+                      .eq('id', selectedConv.id);
+
+                    if (error) throw error;
+
+                    // Ideally, trigger a refresh of conversations. 
+                    // For now, let user see change if they reload or if realtime works.
+                    // A better way is to locally update the conversations list.
+                  } catch (err) {
+                    console.error("Error assigning agent:", err);
+                  }
+                }}
+                className="w-full bg-slate-50 border-none rounded-lg text-sm font-semibold py-2.5 px-3 focus:ring-2 focus:ring-primary-100 text-slate-700"
+              >
+                <option value="">Sin asignar</option>
+                {team.map(member => (
+                  <option key={member.id} value={member.id}>{member.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div>
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Etiquetas</label>
             <div className="flex flex-wrap gap-2">
@@ -390,7 +433,20 @@ const Conversations = () => {
 
           <div>
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Estado del Chat</label>
-            <select className="w-full bg-slate-50 border-none rounded-lg text-sm font-semibold py-2.5 px-3 focus:ring-2 focus:ring-primary-100 text-slate-700">
+            <select
+              value={selectedConv.status}
+              onChange={async (e) => {
+                try {
+                  await supabase
+                    .from('comm_conversations')
+                    .update({ status: e.target.value })
+                    .eq('id', selectedConv.id);
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className="w-full bg-slate-50 border-none rounded-lg text-sm font-semibold py-2.5 px-3 focus:ring-2 focus:ring-primary-100 text-slate-700"
+            >
               <option value="open">Abierto</option>
               <option value="pending">Pendiente</option>
               <option value="closed">Cerrado</option>

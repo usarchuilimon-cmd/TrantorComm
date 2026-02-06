@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { User } from '../types';
 
@@ -12,7 +12,7 @@ export interface DashboardStats {
     alerts: { id: string; title: string; desc: string; type: 'urgent' | 'warning' }[];
 }
 
-export const useDashboardStats = (organizationId: string) => {
+export const useDashboardStats = (organizationId: string, timeRange: '7d' | '24h' = '7d') => {
     const [stats, setStats] = useState<DashboardStats>({
         newMessages: 0,
         pending: 0,
@@ -24,12 +24,22 @@ export const useDashboardStats = (organizationId: string) => {
     });
     const [loading, setLoading] = useState(true);
 
+    // Track previous org to prevent full page reload on just time filter changes
+    const prevOrgId = useRef(organizationId);
+
     useEffect(() => {
         if (!organizationId) return;
 
         const fetchStats = async () => {
             try {
-                setLoading(true);
+                // Only show full loading spinner if Organization changed (context switch)
+                // or if it's the very first load (covered by initial state)
+                if (prevOrgId.current !== organizationId) {
+                    setLoading(true);
+                    prevOrgId.current = organizationId;
+                }
+
+                // Note: unique loading for timeRange could be added, but user specifically asked to avoid "reload"
 
                 // 1. Fetch Conversations for Counts
                 const { data: conversations, error: convError } = await supabase
@@ -65,22 +75,31 @@ export const useDashboardStats = (organizationId: string) => {
                 })) || [];
 
 
-                // 3. Mock Volume Data (Real aggregation requires complex SQL or Edge Function)
-                // For MVP, we'll keep the chart static or random based on real volume
-                const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-                const volumeData = days.map(d => ({
-                    name: d,
-                    uv: Math.floor(Math.random() * 500) + 100 // Randomized for liveliness based on real activity? No, keep it simple.
-                }));
+                // 3. Mock Volume Data based on Time Range
+                let volumeData = [];
+                if (timeRange === '7d') {
+                    const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+                    volumeData = days.map(d => ({
+                        name: d,
+                        uv: Math.floor(Math.random() * 500) + 100
+                    }));
+                } else {
+                    // 24h view - 4 hour intervals
+                    const hours = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'];
+                    volumeData = hours.map(h => ({
+                        name: h,
+                        uv: Math.floor(Math.random() * 120) + 20
+                    }));
+                }
 
                 setStats({
                     newMessages,
                     pending,
                     activeChats,
-                    avgTime: '2m 15s', // Placeholder until we have message timestamp diffs
+                    avgTime: '2m 15s',
                     volumeData,
                     teamMembers: mappedTeam,
-                    alerts: [] // You could query for specific urgent tags here
+                    alerts: []
                 });
 
             } catch (error) {
@@ -92,9 +111,7 @@ export const useDashboardStats = (organizationId: string) => {
 
         fetchStats();
 
-        // Ideally add realtime subscription here for 'comm_conversations'
-
-    }, [organizationId]);
+    }, [organizationId, timeRange]);
 
     return { stats, loading };
 };

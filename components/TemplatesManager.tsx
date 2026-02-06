@@ -17,6 +17,7 @@ const TemplatesManager: React.FC = () => {
     const { user } = useAuth();
     const { templates, loading, syncTemplates } = useTemplates(user?.organizationId || '');
     const [filter, setFilter] = useState<'ALL' | 'APPROVED' | 'PENDING' | 'REJECTED'>('ALL');
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'>('ALL');
     const [search, setSearch] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
 
@@ -29,8 +30,9 @@ const TemplatesManager: React.FC = () => {
 
     const filteredTemplates = templates.filter(t => {
         const matchesFilter = filter === 'ALL' || t.status === filter;
+        const matchesCategory = categoryFilter === 'ALL' || t.category === categoryFilter;
         const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase());
-        return matchesFilter && matchesSearch;
+        return matchesFilter && matchesCategory && matchesSearch;
     });
 
     const getStatusBadge = (status: string) => {
@@ -90,7 +92,22 @@ const TemplatesManager: React.FC = () => {
                                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                                     }`}
                             >
-                                {f === 'ALL' ? 'Todas' : f}
+                                {f === 'ALL' ? 'Todos los Estados' : f}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Category Filter */}
+                    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 border-l border-slate-200 pl-4">
+                        {['ALL', 'MARKETING', 'UTILITY', 'AUTHENTICATION'].map((c) => (
+                            <button
+                                key={c}
+                                onClick={() => setCategoryFilter(c as any)}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${categoryFilter === c
+                                    ? 'bg-primary-600 text-white'
+                                    : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                            >
+                                {c === 'ALL' ? 'Todas las Categorías' : c}
                             </button>
                         ))}
                     </div>
